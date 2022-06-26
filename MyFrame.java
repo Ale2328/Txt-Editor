@@ -1,6 +1,9 @@
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.awt.*;
 
 
@@ -158,6 +161,17 @@ public class MyFrame extends JFrame implements ActionListener {
 
             if (response == JFileChooser.APPROVE_OPTION) {
                 File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                try(FileWriter fw = new FileWriter(file);
+                    BufferedWriter bw = new BufferedWriter(fw)){
+                    if(!file.exists())
+                        file.createNewFile();
+                    
+                    bw.write(this.textArea.getText() + "\n");
+                    bw.close();
+                } catch (IOException ie) {
+                    ie.printStackTrace();
+                }
+
                 System.out.println(file);
             }
             System.out.println("Save Item");

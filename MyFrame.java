@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -8,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.awt.*;
 
-//TO DO: Aggiungere la scrollbar
+
 public class MyFrame extends JFrame implements ActionListener {
 
     JMenuBar menuBar = new JMenuBar();
@@ -16,13 +17,19 @@ public class MyFrame extends JFrame implements ActionListener {
     JMenu editMenu = new JMenu("Edit");
     JMenuItem openItem = new JMenuItem("Open");
     JMenuItem saveItem = new JMenuItem("Save");
-    JMenuItem saveAsItem = new JMenuItem("Save As");
     JMenuItem newWindowItem = new JMenuItem("New Window");
+    JMenuItem colorChooserItem = new JMenuItem("Text Color");
+    JMenuItem dimensionItem = new JMenuItem("Text Dimension");
     JMenuItem exitItem = new JMenuItem("Exit");
     ImageIcon icon;
-    JTextField textField = new JTextField();
-    JTextArea textArea = new JTextArea(300, 1);
+    JTextArea textArea = new JTextArea();
+    JScrollPane scrollPane;
+    JPanel panel = new JPanel();
+    Font font = new Font("Arial", Font.PLAIN, 16);
 
+    /*
+     * COSTRUCTOR
+     */
     MyFrame() {
         this.setTitle("Txt Editor");
         this.setSize(800, 600);
@@ -30,28 +37,17 @@ public class MyFrame extends JFrame implements ActionListener {
         this.setLayout(new FlowLayout());
 
         setTextArea();
+        initPanel();
         setFileMenu();
-        setTextField();
         setIcon();
         setMenuBar();
 
         this.setBackground(Color.black);
         this.setResizable(false);
-        this.add(textArea);
-        this.add(textField);
-
+        this.add(panel);
+        
         this.setJMenuBar(menuBar);
         this.setVisible(true);
-    }
-
-    /*
-     * TEXTFIELD
-     */
-    private void setTextField() {
-        textField.setPreferredSize(new Dimension(800, 200));
-        textField.setForeground(Color.black);
-        textField.setBackground(Color.white);
-        textField.setEditable(true);
     }
 
     /*
@@ -60,36 +56,62 @@ public class MyFrame extends JFrame implements ActionListener {
     public void setFileMenu() {
         openItem.addActionListener(this);
         saveItem.addActionListener(this);
-        saveAsItem.addActionListener(this);
         newWindowItem.addActionListener(this);
         exitItem.addActionListener(this);
+        colorChooserItem.addActionListener(this);
+        dimensionItem.addActionListener(this);
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
         openItem.setMnemonic(KeyEvent.VK_O);
         saveItem.setMnemonic(KeyEvent.VK_S);
-        saveAsItem.setMnemonic(KeyEvent.VK_A);
-        exitItem.setMnemonic(KeyEvent.VK_E);
+        exitItem.setMnemonic(KeyEvent.VK_X);
         fileMenu.setMnemonic(KeyEvent.VK_F);
+        colorChooserItem.setMnemonic(KeyEvent.VK_C);
+        editMenu.setMnemonic(KeyEvent.VK_E);
+        dimensionItem.setMnemonic(KeyEvent.VK_D);
 
         fileMenu.add(newWindowItem);
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
-        fileMenu.add(saveAsItem);
         fileMenu.add(exitItem);
+
+        editMenu.add(colorChooserItem);
+        editMenu.add(dimensionItem);
+    }
+
+    /*
+     * INIT PANEL
+     */
+    public void initPanel(){
+        panel.setBackground(Color.white);
+        panel.setPreferredSize(this.getSize());
+        panel.add(scrollPane);
+        panel.setVisible(true);
     }
 
     /*
      * TEXTAREA
      */
     public void setTextArea() {
-        textArea.setPreferredSize(new Dimension(780, 200));
         textArea.setForeground(Color.black);
         textArea.setBackground(Color.white);
-        textArea.setEditable(true);
-
+        
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
+        textArea.setFont(new Font("Monospace", Font.PLAIN, 16));
+        textArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+        this.setScrollPane();
+    }
+
+
+    /*
+     * SCROLLPANE
+     */
+    private void setScrollPane() {
+        scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(780, 520));
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     }
 
     /*
@@ -108,6 +130,26 @@ public class MyFrame extends JFrame implements ActionListener {
         menuBar.add(editMenu);
     }
 
+    /*
+     * SET COLOR
+     */
+    public void setColor() {
+        Color color = JColorChooser.showDialog(this, "Choose a color", Color.white);
+        textArea.setForeground(color);
+    }
+
+    /*
+     * SET DIMENSION
+     */
+    public void setDimension(){
+        String dimension = JOptionPane.showInputDialog(this, "Insert a dimension", textArea.getFont().getSize()); // dopo qui ci va un icona
+        font = new Font("Arial", Font.PLAIN, Integer.parseInt(dimension));
+        textArea.setFont(font);
+    }
+
+    /*
+     * ACTION LISTENER
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         JFileChooser fileChooser;
@@ -180,11 +222,17 @@ public class MyFrame extends JFrame implements ActionListener {
         }
 
         /*
-         * SAVE AS
+         * SET COLOR
          */
-        if (e.getSource() == saveAsItem) {
-            // TO DO: Salvare il file txt con un nome diverso
-            System.out.println("Save As Item");
+        if(e.getSource() == colorChooserItem){
+            setColor();
+        }
+
+        /*
+         * SET DIMENSION
+         */
+        if(e.getSource() == dimensionItem){
+            setDimension();
         }
 
         /*
@@ -193,7 +241,6 @@ public class MyFrame extends JFrame implements ActionListener {
         if (e.getSource() == exitItem) {
             System.exit(0);
         }
-
     }
 
 }

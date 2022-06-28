@@ -1,5 +1,8 @@
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Color;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,13 +22,13 @@ public class MyFrame extends JFrame implements ActionListener {
     JMenuItem saveItem = new JMenuItem("Save");
     JMenuItem newWindowItem = new JMenuItem("New Window");
     JMenuItem colorChooserItem = new JMenuItem("Text Color");
-    JMenuItem dimensionItem = new JMenuItem("Text Dimension");
     JMenuItem exitItem = new JMenuItem("Exit");
     ImageIcon icon;
     JTextArea textArea = new JTextArea();
     JScrollPane scrollPane;
     JPanel panel = new JPanel();
     Font font = new Font("Arial", Font.PLAIN, 16);
+    JSpinner fontSizeSpinner = new JSpinner();
 
     /*
      * COSTRUCTOR
@@ -41,6 +44,7 @@ public class MyFrame extends JFrame implements ActionListener {
         setFileMenu();
         setIcon();
         setMenuBar();
+        setFontSize();
 
         this.setBackground(Color.black);
         this.setResizable(false);
@@ -59,7 +63,7 @@ public class MyFrame extends JFrame implements ActionListener {
         newWindowItem.addActionListener(this);
         exitItem.addActionListener(this);
         colorChooserItem.addActionListener(this);
-        dimensionItem.addActionListener(this);
+        //dimensionItem.addActionListener(this);
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
         openItem.setMnemonic(KeyEvent.VK_O);
@@ -68,7 +72,13 @@ public class MyFrame extends JFrame implements ActionListener {
         fileMenu.setMnemonic(KeyEvent.VK_F);
         colorChooserItem.setMnemonic(KeyEvent.VK_C);
         editMenu.setMnemonic(KeyEvent.VK_E);
-        dimensionItem.setMnemonic(KeyEvent.VK_D);
+        
+
+        colorChooserItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        openItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        saveItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        newWindowItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        exitItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
         fileMenu.add(newWindowItem);
         fileMenu.add(openItem);
@@ -76,7 +86,7 @@ public class MyFrame extends JFrame implements ActionListener {
         fileMenu.add(exitItem);
 
         editMenu.add(colorChooserItem);
-        editMenu.add(dimensionItem);
+        editMenu.add(fontSizeSpinner);
     }
 
     /*
@@ -96,11 +106,12 @@ public class MyFrame extends JFrame implements ActionListener {
         textArea.setForeground(Color.black);
         textArea.setBackground(Color.white);
         
+        
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
         textArea.setFont(new Font("Monospace", Font.PLAIN, 16));
-        textArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+        textArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         this.setScrollPane();
     }
 
@@ -139,12 +150,20 @@ public class MyFrame extends JFrame implements ActionListener {
     }
 
     /*
-     * SET DIMENSION
+     * CHANGE TEXT SIZE
      */
-    public void setDimension(){
-        String dimension = JOptionPane.showInputDialog(this, "Insert a dimension", textArea.getFont().getSize()); // dopo qui ci va un icona
-        font = new Font("Arial", Font.PLAIN, Integer.parseInt(dimension));
-        textArea.setFont(font);
+    public void setFontSize() {
+        SpinnerModel model = new SpinnerNumberModel(16, 8, 72, 1);
+        fontSizeSpinner.setModel(model);
+        fontSizeSpinner.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        fontSizeSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int size = (int) fontSizeSpinner.getValue();
+                font = new Font("Arial", Font.PLAIN, size);
+                textArea.setFont(font);
+            }
+        });
     }
 
     /*
@@ -232,10 +251,10 @@ public class MyFrame extends JFrame implements ActionListener {
         /*
          * SET DIMENSION
          */
-        if(e.getSource() == dimensionItem){
+/*         if(e.getSource() == dimensionItem){
             setDimension();
         }
-
+ */
         /*
          * EXIT
          */

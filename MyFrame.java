@@ -163,6 +163,7 @@ public class MyFrame extends JFrame implements ActionListener {
 
             MyFrame newFrame = new MyFrame();
             newFrame.setVisible(true);
+            dispose();
 
             System.out.println("New Window");
         }

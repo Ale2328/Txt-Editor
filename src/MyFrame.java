@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.awt.*;
 
 
-public class MyFrame extends JFrame implements ActionListener {
+public class MyFrame extends JFrame {
 
     JMenuBar menuBar = new JMenuBar();
     JMenu fileMenu = new JMenu("File");
@@ -30,6 +30,7 @@ public class MyFrame extends JFrame implements ActionListener {
     JPanel panel = new JPanel();
     Font font = new Font("Arial", Font.PLAIN, 16);
     JSpinner fontSizeSpinner = new JSpinner();
+    JFileChooser fileChooser;
 
     /*
      * COSTRUCTOR
@@ -37,7 +38,7 @@ public class MyFrame extends JFrame implements ActionListener {
     MyFrame() {
         this.setTitle("Txt Editor");
         this.setSize(800, 600);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLayout(new FlowLayout());
 
         setTextArea();
@@ -59,12 +60,12 @@ public class MyFrame extends JFrame implements ActionListener {
      * FILE MENU
      */
     public void setFileMenu() {
-        openItem.addActionListener(this);
-        saveItem.addActionListener(this);
-        newWindowItem.addActionListener(this);
-        exitItem.addActionListener(this);
-        colorChooserItem.addActionListener(this);
-        //dimensionItem.addActionListener(this);
+        openItem.addActionListener(evt -> openFile());
+        saveItem.addActionListener(evt -> saveFile());
+        newWindowItem.addActionListener(evt -> newWindow());
+        exitItem.addActionListener(evt -> System.exit(0));
+        colorChooserItem.addActionListener(evt -> setColor());
+       
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
         openItem.setMnemonic(KeyEvent.VK_O);
@@ -89,6 +90,71 @@ public class MyFrame extends JFrame implements ActionListener {
         editMenu.add(colorChooserItem);
         editMenu.add(fontSizeSpinner);
     }
+
+    /*
+     * SAVE FILE
+     */
+    public void saveFile(){
+        fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+
+        int response = fileChooser.showSaveDialog(this);
+
+        if (response == JFileChooser.APPROVE_OPTION) {
+            File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            try (FileWriter fw = new FileWriter(file);
+                    BufferedWriter bw = new BufferedWriter(fw)) {
+                if (!file.exists())
+                    file.createNewFile();
+
+                bw.write(this.textArea.getText());
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            }
+        }
+        System.out.println("Save Item");
+    }
+
+    /*
+     * OPEN FILE
+     */
+    public void openFile(){
+        
+
+        fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+
+        int response = fileChooser.showOpenDialog(this);
+
+        if (response == JFileChooser.APPROVE_OPTION) {
+            File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            try (FileReader fr = new FileReader(file);
+                    BufferedReader br = new BufferedReader(fr)) {
+
+                String valueRead = br.readLine();
+                while (valueRead != null) {
+                    textArea.append(valueRead + "\n");
+                    valueRead = br.readLine();
+                }
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            }
+        }
+    }
+
+    /*
+     * NEW WINDOW
+     */
+    public void newWindow(){
+        // TO DO: Fare in modo che se si chiude una finestra non si chiudano tutte
+
+        MyFrame newFrame = new MyFrame();
+        newFrame.setVisible(true);
+        //dispose();
+        
+        System.out.println("New Window");
+    }
+
 
     /*
      * INIT PANEL
@@ -130,7 +196,7 @@ public class MyFrame extends JFrame implements ActionListener {
      * ICON
      */
     public void setIcon() {
-        icon = new ImageIcon("icon.png");
+        icon = new ImageIcon("assets/icon.png");
         this.setIconImage(icon.getImage());
     }
 
@@ -167,101 +233,5 @@ public class MyFrame extends JFrame implements ActionListener {
         });
     }
 
-    /*
-     * ACTION LISTENER
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        JFileChooser fileChooser;
-
-        /*
-         * NEW WINDOW
-         */
-        if (e.getSource() == newWindowItem) {
-
-            // TO DO: Fare in modo che se si chiude una finestra non si chiudano tutte
-
-            MyFrame newFrame = new MyFrame();
-            newFrame.setVisible(true);
-            dispose();
-
-            System.out.println("New Window");
-        }
-
-        /*
-         * OPEN
-         */
-        if (e.getSource() == openItem) {
-
-            // TO DO: Visualizzare il contenuto del file txt
-
-            fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-
-            int response = fileChooser.showOpenDialog(this);
-
-            if (response == JFileChooser.APPROVE_OPTION) {
-                File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                try (FileReader fr = new FileReader(file);
-                        BufferedReader br = new BufferedReader(fr)) {
-
-                    String valueRead = br.readLine();
-                    while (valueRead != null) {
-                        textArea.append(valueRead + "\n");
-                        valueRead = br.readLine();
-                    }
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
-            }
-
-            System.out.println("Open Item");
-        }
-
-        /*
-         * SAVE
-         */
-        if (e.getSource() == saveItem) {
-            fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-
-            int response = fileChooser.showSaveDialog(this);
-
-            if (response == JFileChooser.APPROVE_OPTION) {
-                File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                try (FileWriter fw = new FileWriter(file);
-                        BufferedWriter bw = new BufferedWriter(fw)) {
-                    if (!file.exists())
-                        file.createNewFile();
-
-                    bw.write(this.textArea.getText());
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
-            }
-            System.out.println("Save Item");
-        }
-
-        /*
-         * SET COLOR
-         */
-        if(e.getSource() == colorChooserItem){
-            setColor();
-        }
-
-        /*
-         * SET DIMENSION
-         */
-/*         if(e.getSource() == dimensionItem){
-            setDimension();
-        }
- */
-        /*
-         * EXIT
-         */
-        if (e.getSource() == exitItem) {
-            System.exit(0);
-        }
-    }
 
 }

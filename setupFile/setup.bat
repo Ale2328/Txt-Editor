@@ -1,3 +1,3 @@
-java --enable-preview -jar Txt-Editor-main.jar
+java --enable-preview -jar Txt-Editor.jar
 
 exit

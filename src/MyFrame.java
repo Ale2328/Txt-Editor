@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.awt.*;
 
+// TODO: CAPIRE PERCHE' IL JCOMBOBOX NON FUNZIONA (PERCHÈ È GAY)
 
 public class MyFrame extends JFrame {
 
@@ -21,6 +22,7 @@ public class MyFrame extends JFrame {
 
     JMenu fileMenu = new JMenu("File");
     JMenu editMenu = new JMenu("Edit");
+    JMenu fontMenu = new JMenu("Font");
 
     JMenuItem openItem = new JMenuItem("Open");
     JMenuItem saveItem = new JMenuItem("Save");
@@ -29,6 +31,14 @@ public class MyFrame extends JFrame {
     JMenuItem boldItem = new JMenuItem("Bold");
     JMenuItem italicItem = new JMenuItem("Italic");
     JMenuItem exitItem = new JMenuItem("Exit");
+    
+    // I FONT
+    JMenuItem verdanaItem = new JMenuItem("Verdana");
+    JMenuItem arialItem = new JMenuItem("Arial");
+    JMenuItem timesNewRomanItem = new JMenuItem("Times New Roman");
+    JMenuItem comicSansItem = new JMenuItem("Comic Sans");
+    JMenuItem courierNewItem = new JMenuItem("Courier New");
+
 
     ImageIcon icon;
 
@@ -39,6 +49,7 @@ public class MyFrame extends JFrame {
     JPanel panel = new JPanel();
 
     Font font = new Font("Arial", Font.PLAIN, 16);
+    Font BabyShower;
 
     JSpinner fontSizeSpinner = new JSpinner();
 
@@ -53,7 +64,9 @@ public class MyFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLayout(new FlowLayout());
 
-        setTextArea();
+        setTextArea("Monospace", Font.PLAIN, 16);
+
+        setScrollPane();        
         initPanel();
         setFileMenu();
         setIcon();
@@ -76,9 +89,15 @@ public class MyFrame extends JFrame {
         saveItem.addActionListener(evt -> saveFile());
         newWindowItem.addActionListener(evt -> newWindow());
         exitItem.addActionListener(evt -> System.exit(0));
-        colorChooserItem.addActionListener(evt -> setColor());
-        boldItem.addActionListener(evt -> setBold());
         italicItem.addActionListener(evt -> setItalic());
+        boldItem.addActionListener(evt -> setBold());
+        colorChooserItem.addActionListener(evt -> setColor());
+
+        verdanaItem.addActionListener(evt -> setFont("Verdana", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
+        arialItem.addActionListener(evt -> setFont("Arial", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
+        timesNewRomanItem.addActionListener(evt -> setFont("Times New Roman", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
+        comicSansItem.addActionListener(evt -> setFont("Comic Sans", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
+        courierNewItem.addActionListener(evt -> setFont("courierNew", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
         
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
@@ -110,6 +129,19 @@ public class MyFrame extends JFrame {
         editMenu.add(italicItem);
         editMenu.add(colorChooserItem);
         editMenu.add(fontSizeSpinner);
+
+        fontMenu.add(verdanaItem);
+        fontMenu.add(arialItem);
+        fontMenu.add(timesNewRomanItem);
+        fontMenu.add(comicSansItem);
+        fontMenu.add(courierNewItem);
+    }
+
+    /* 
+     * SET FONT
+     */
+    private void setFont(String fontName, int style, int size) {
+        this.textArea.setFont(new Font(fontName, style, size));
     }
 
     /*
@@ -190,14 +222,14 @@ public class MyFrame extends JFrame {
     /*
      * TEXTAREA
      */
-    public void setTextArea() {
+    public void setTextArea(String fontName, int fontStyle, int fontSize) {
         textArea.setForeground(Color.black);
         textArea.setBackground(Color.white);
         
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
-        textArea.setFont(new Font("Monospace", Font.PLAIN, 16));
+        textArea.setFont(new Font(fontName, fontStyle, fontSize));
         textArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         this.setScrollPane();
     }
@@ -206,24 +238,22 @@ public class MyFrame extends JFrame {
      * BOLD ITEM
      */
     public void setBold(){
-        if(textArea.getFont().isBold()){
-            textArea.setFont(font);
-        }else{
-            int size = (int) fontSizeSpinner.getValue();
-            textArea.setFont(new Font("Arial", Font.BOLD, size));
-        }
+        if(textArea.getFont().isBold())
+            return;
+        
+        int size = (int) fontSizeSpinner.getValue();
+        textArea.setFont(new Font(textArea.getFont().toString(), Font.BOLD, size));
     }
 
     /*
      * ITALIC ITEM
      */
     public void setItalic(){
-        if(textArea.getFont().isItalic()){
-            textArea.setFont(font);
-        }else{
-            int size = (int) fontSizeSpinner.getValue();
-            textArea.setFont(new Font("Arial", Font.ITALIC, size));
-        }
+        if(textArea.getFont().isItalic())
+            return;
+        
+        int size = (int) fontSizeSpinner.getValue();
+        textArea.setFont(new Font(textArea.getFont().toString(), Font.ITALIC, size));
     }
 
     /*
@@ -249,7 +279,7 @@ public class MyFrame extends JFrame {
     public void setMenuBar() {
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
-
+        menuBar.add(fontMenu);
     }
 
     /*

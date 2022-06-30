@@ -16,20 +16,32 @@ import java.awt.*;
 
 public class MyFrame extends JFrame {
 
+    
     JMenuBar menuBar = new JMenuBar();
+
     JMenu fileMenu = new JMenu("File");
     JMenu editMenu = new JMenu("Edit");
+
     JMenuItem openItem = new JMenuItem("Open");
     JMenuItem saveItem = new JMenuItem("Save");
     JMenuItem newWindowItem = new JMenuItem("New Window");
     JMenuItem colorChooserItem = new JMenuItem("Text Color");
+    JMenuItem boldItem = new JMenuItem("Bold");
+    JMenuItem italicItem = new JMenuItem("Italic");
     JMenuItem exitItem = new JMenuItem("Exit");
+
     ImageIcon icon;
+
     JTextArea textArea = new JTextArea();
+
     JScrollPane scrollPane;
+
     JPanel panel = new JPanel();
+
     Font font = new Font("Arial", Font.PLAIN, 16);
+
     JSpinner fontSizeSpinner = new JSpinner();
+
     JFileChooser fileChooser;
 
     /*
@@ -65,7 +77,9 @@ public class MyFrame extends JFrame {
         newWindowItem.addActionListener(evt -> newWindow());
         exitItem.addActionListener(evt -> System.exit(0));
         colorChooserItem.addActionListener(evt -> setColor());
-       
+        boldItem.addActionListener(evt -> setBold());
+        italicItem.addActionListener(evt -> setItalic());
+        
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
         openItem.setMnemonic(KeyEvent.VK_O);
@@ -74,6 +88,8 @@ public class MyFrame extends JFrame {
         fileMenu.setMnemonic(KeyEvent.VK_F);
         colorChooserItem.setMnemonic(KeyEvent.VK_C);
         editMenu.setMnemonic(KeyEvent.VK_E);
+        boldItem.setMnemonic(KeyEvent.VK_B);
+        italicItem.setMnemonic(KeyEvent.VK_I);
         
 
         colorChooserItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
@@ -81,12 +97,17 @@ public class MyFrame extends JFrame {
         saveItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         newWindowItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         exitItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        boldItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        italicItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+
 
         fileMenu.add(newWindowItem);
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
         fileMenu.add(exitItem);
 
+        editMenu.add(boldItem);
+        editMenu.add(italicItem);
         editMenu.add(colorChooserItem);
         editMenu.add(fontSizeSpinner);
     }
@@ -173,7 +194,6 @@ public class MyFrame extends JFrame {
         textArea.setForeground(Color.black);
         textArea.setBackground(Color.white);
         
-        
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
@@ -182,6 +202,29 @@ public class MyFrame extends JFrame {
         this.setScrollPane();
     }
 
+    /*
+     * BOLD ITEM
+     */
+    public void setBold(){
+        if(textArea.getFont().isBold()){
+            textArea.setFont(font);
+        }else{
+            int size = (int) fontSizeSpinner.getValue();
+            textArea.setFont(new Font("Arial", Font.BOLD, size));
+        }
+    }
+
+    /*
+     * ITALIC ITEM
+     */
+    public void setItalic(){
+        if(textArea.getFont().isItalic()){
+            textArea.setFont(font);
+        }else{
+            int size = (int) fontSizeSpinner.getValue();
+            textArea.setFont(new Font("Arial", Font.ITALIC, size));
+        }
+    }
 
     /*
      * SCROLLPANE
@@ -196,7 +239,7 @@ public class MyFrame extends JFrame {
      * ICON
      */
     public void setIcon() {
-        icon = new ImageIcon("assets/icon.png");
+        icon = new ImageIcon("./assets/icon.png");
         this.setIconImage(icon.getImage());
     }
 
@@ -206,6 +249,7 @@ public class MyFrame extends JFrame {
     public void setMenuBar() {
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+
     }
 
     /*

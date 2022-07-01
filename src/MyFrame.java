@@ -13,8 +13,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.awt.*;
 
-// TODO: CAPIRE PERCHE' IL JCOMBOBOX NON FUNZIONA (PERCHÈ È GAY)
-
 public class MyFrame extends JFrame implements ActionListener {
 
     private JMenuBar menuBar = new JMenuBar();
@@ -22,7 +20,6 @@ public class MyFrame extends JFrame implements ActionListener {
     private JMenu editMenu = new JMenu("Edit");
     private JMenu fontMenu = new JMenu("Font");
 
-    private JButton button;
 
     private JMenuItem openItem = new JMenuItem("Open");
     private JMenuItem saveItem = new JMenuItem("Save");
@@ -39,11 +36,6 @@ public class MyFrame extends JFrame implements ActionListener {
     private JComboBox<String> fontComboBox = new JComboBox<>(FONTS);
 
     private JDialog d;
-
-    // private JMenuItem arialItem = new JMenuItem("Arial");
-    // private JMenuItem timesNewRomanItem = new JMenuItem("Times New Roman");
-    // private JMenuItem comicSansItem = new JMenuItem("Comic Sans");
-    // private JMenuItem courierNewItem = new JMenuItem("Courier New");
 
     private ImageIcon icon;
     private JTextArea textArea = new JTextArea();
@@ -94,26 +86,7 @@ public class MyFrame extends JFrame implements ActionListener {
         boldItem.addActionListener(evt -> setBold());
         colorChooserItem.addActionListener(evt -> setColor());
         fontComboBoxItem.addActionListener(this);
-        // this.fontComboBox.addActionListener(this);
-
-        // this.fontMenu.addActionListener(this);
-        // this.fontComboBox.addActionListener(this);
-
-        // verdanaItem.addActionListener(
-        // evt -> setFont("Verdana", this.textArea.getFont().getStyle(),
-        // this.textArea.getFont().getSize()));
-        // arialItem.addActionListener(
-        // evt -> setFont("Arial", this.textArea.getFont().getStyle(),
-        // this.textArea.getFont().getSize()));
-        // timesNewRomanItem.addActionListener(evt -> setFont("Times New Roman",
-        // this.textArea.getFont().getStyle(),
-        // this.textArea.getFont().getSize()));
-        // comicSansItem.addActionListener(
-        // evt -> setFont("Comic Sans", this.textArea.getFont().getStyle(),
-        // this.textArea.getFont().getSize()));
-        // courierNewItem.addActionListener(
-        // evt -> setFont("Courier New", this.textArea.getFont().getStyle(),
-        // this.textArea.getFont().getSize()));
+        fontComboBox.addActionListener(e -> this.selectFont());
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
         openItem.setMnemonic(KeyEvent.VK_O);
@@ -143,41 +116,21 @@ public class MyFrame extends JFrame implements ActionListener {
         editMenu.add(colorChooserItem);
         editMenu.add(fontSizeSpinner);
 
-        // this.fontComboBoxItem.add(this.fontComboBox);
         this.fontMenu.add(fontComboBoxItem);
-        // fontMenu.add(verdanaItem);
-        // fontMenu.add(arialItem);
-        // fontMenu.add(timesNewRomanItem);
-        // fontMenu.add(comicSansItem);
-        // fontMenu.add(courierNewItem);
     }
 
-    /*
-     * SET FONT
-     */
-    // private void setFont(String fontName, int style, int size) {
-    // this.textArea.setFont(new Font(fontName, style, size));
-    // }
     @Override
     public void actionPerformed(ActionEvent evt) {
-        button = new JButton("Enter");
         this.d = new JDialog(this, "Font", true);
         this.d.setSize(new Dimension(100, 100));
+        this.d.setLocationRelativeTo(this);
         this.d.add(fontComboBox);
+        this.d.setResizable(false);
         this.d.setVisible(true);
+    }
 
-        fontComboBox.addActionListener(this);
-
-        if (evt.getSource() == fontComboBox) {
-            this.textArea
-                    .setFont(new Font(fontComboBox.getSelectedItem().toString(), this.textArea.getFont().getStyle(),
-                            this.textArea.getFont().getSize()));
-        }
-
-        System.out.println("ciaone");
-        // this.textArea
-        // .setFont(new Font(fontName, this.textArea.getFont().getStyle(),
-        // this.textArea.getFont().getSize()));
+    private void selectFont() {
+        this.textArea.setFont(new Font(fontComboBox.getSelectedItem().toString(), this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
     }
 
     /*
@@ -234,11 +187,9 @@ public class MyFrame extends JFrame implements ActionListener {
      * NEW WINDOW
      */
     public void newWindow() {
-        // TO DO: Fare in modo che se si chiude una finestra non si chiudano tutte
 
         MyFrame newFrame = new MyFrame();
         newFrame.setVisible(true);
-        // dispose();
 
         System.out.println("New Window");
     }

@@ -13,47 +13,40 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.awt.*;
 
-// TODO: CAPIRE PERCHE' IL JCOMBOBOX NON FUNZIONA (PERCHÈ È GAY)
+public class MyFrame extends JFrame implements ActionListener {
 
-public class MyFrame extends JFrame {
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenu fileMenu = new JMenu("File");
+    private JMenu editMenu = new JMenu("Edit");
+    private JMenu fontMenu = new JMenu("Font");
 
-    
-    JMenuBar menuBar = new JMenuBar();
 
-    JMenu fileMenu = new JMenu("File");
-    JMenu editMenu = new JMenu("Edit");
-    JMenu fontMenu = new JMenu("Font");
+    private JMenuItem openItem = new JMenuItem("Open");
+    private JMenuItem saveItem = new JMenuItem("Save");
+    private JMenuItem newWindowItem = new JMenuItem("New Window");
+    private JMenuItem colorChooserItem = new JMenuItem("Text Color");
+    private JMenuItem boldItem = new JMenuItem("Bold");
+    private JMenuItem italicItem = new JMenuItem("Italic");
+    private JMenuItem exitItem = new JMenuItem("Exit");
+    private JMenuItem fontComboBoxItem = new JMenuItem("Font");
 
-    JMenuItem openItem = new JMenuItem("Open");
-    JMenuItem saveItem = new JMenuItem("Save");
-    JMenuItem newWindowItem = new JMenuItem("New Window");
-    JMenuItem colorChooserItem = new JMenuItem("Text Color");
-    JMenuItem boldItem = new JMenuItem("Bold");
-    JMenuItem italicItem = new JMenuItem("Italic");
-    JMenuItem exitItem = new JMenuItem("Exit");
-    
     // I FONT
-    JMenuItem verdanaItem = new JMenuItem("Verdana");
-    JMenuItem arialItem = new JMenuItem("Arial");
-    JMenuItem timesNewRomanItem = new JMenuItem("Times New Roman");
-    JMenuItem comicSansItem = new JMenuItem("Comic Sans");
-    JMenuItem courierNewItem = new JMenuItem("Courier New");
+    private final String[] FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 
+    private JComboBox<String> fontComboBox = new JComboBox<>(FONTS);
 
-    ImageIcon icon;
+    private JDialog d;
 
-    JTextArea textArea = new JTextArea();
+    private ImageIcon icon;
+    private JTextArea textArea = new JTextArea();
+    private JScrollPane scrollPane;
+    private JPanel panel = new JPanel();
 
-    JScrollPane scrollPane;
+    private Font font = new Font("Arial", Font.PLAIN, 16);
 
-    JPanel panel = new JPanel();
+    private JSpinner fontSizeSpinner = new JSpinner();
 
-    Font font = new Font("Arial", Font.PLAIN, 16);
-    Font BabyShower;
-
-    JSpinner fontSizeSpinner = new JSpinner();
-
-    JFileChooser fileChooser;
+    private JFileChooser fileChooser;
 
     /*
      * COSTRUCTOR
@@ -64,19 +57,19 @@ public class MyFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLayout(new FlowLayout());
 
-        setTextArea("Monospace", Font.PLAIN, 16);
+        this.setTextArea("Monospace", Font.PLAIN, 16);
 
-        setScrollPane();        
-        initPanel();
-        setFileMenu();
-        setIcon();
-        setMenuBar();
-        setFontSize();
+        this.setScrollPane();
+        this.initPanel();
+        this.setFileMenu();
+        this.setIcon();
+        this.setMenuBar();
+        this.setFontSize();
 
         this.setBackground(Color.black);
         this.setResizable(false);
         this.add(panel);
-        
+
         this.setJMenuBar(menuBar);
         this.setVisible(true);
     }
@@ -92,13 +85,8 @@ public class MyFrame extends JFrame {
         italicItem.addActionListener(evt -> setItalic());
         boldItem.addActionListener(evt -> setBold());
         colorChooserItem.addActionListener(evt -> setColor());
-
-        verdanaItem.addActionListener(evt -> setFont("Verdana", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
-        arialItem.addActionListener(evt -> setFont("Arial", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
-        timesNewRomanItem.addActionListener(evt -> setFont("Times New Roman", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
-        comicSansItem.addActionListener(evt -> setFont("Comic Sans", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
-        courierNewItem.addActionListener(evt -> setFont("courierNew", this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
-        
+        fontComboBoxItem.addActionListener(this);
+        fontComboBox.addActionListener(e -> this.selectFont());
 
         newWindowItem.setMnemonic(KeyEvent.VK_N);
         openItem.setMnemonic(KeyEvent.VK_O);
@@ -109,7 +97,6 @@ public class MyFrame extends JFrame {
         editMenu.setMnemonic(KeyEvent.VK_E);
         boldItem.setMnemonic(KeyEvent.VK_B);
         italicItem.setMnemonic(KeyEvent.VK_I);
-        
 
         colorChooserItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         openItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
@@ -118,7 +105,6 @@ public class MyFrame extends JFrame {
         exitItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         boldItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         italicItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-
 
         fileMenu.add(newWindowItem);
         fileMenu.add(openItem);
@@ -130,24 +116,27 @@ public class MyFrame extends JFrame {
         editMenu.add(colorChooserItem);
         editMenu.add(fontSizeSpinner);
 
-        fontMenu.add(verdanaItem);
-        fontMenu.add(arialItem);
-        fontMenu.add(timesNewRomanItem);
-        fontMenu.add(comicSansItem);
-        fontMenu.add(courierNewItem);
+        this.fontMenu.add(fontComboBoxItem);
     }
 
-    /* 
-     * SET FONT
-     */
-    private void setFont(String fontName, int style, int size) {
-        this.textArea.setFont(new Font(fontName, style, size));
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        this.d = new JDialog(this, "Font", true);
+        this.d.setSize(new Dimension(100, 100));
+        this.d.setLocationRelativeTo(this);
+        this.d.add(fontComboBox);
+        this.d.setResizable(false);
+        this.d.setVisible(true);
+    }
+
+    private void selectFont() {
+        this.textArea.setFont(new Font(fontComboBox.getSelectedItem().toString(), this.textArea.getFont().getStyle(), this.textArea.getFont().getSize()));
     }
 
     /*
      * SAVE FILE
      */
-    public void saveFile(){
+    public void saveFile() {
         fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 
@@ -171,8 +160,7 @@ public class MyFrame extends JFrame {
     /*
      * OPEN FILE
      */
-    public void openFile(){
-        
+    public void openFile() {
 
         fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -198,21 +186,18 @@ public class MyFrame extends JFrame {
     /*
      * NEW WINDOW
      */
-    public void newWindow(){
-        // TO DO: Fare in modo che se si chiude una finestra non si chiudano tutte
+    public void newWindow() {
 
         MyFrame newFrame = new MyFrame();
         newFrame.setVisible(true);
-        //dispose();
-        
+
         System.out.println("New Window");
     }
-
 
     /*
      * INIT PANEL
      */
-    public void initPanel(){
+    public void initPanel() {
         panel.setBackground(Color.white);
         panel.setPreferredSize(this.getSize());
         panel.add(scrollPane);
@@ -225,7 +210,7 @@ public class MyFrame extends JFrame {
     public void setTextArea(String fontName, int fontStyle, int fontSize) {
         textArea.setForeground(Color.black);
         textArea.setBackground(Color.white);
-        
+
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
@@ -237,10 +222,10 @@ public class MyFrame extends JFrame {
     /*
      * BOLD ITEM
      */
-    public void setBold(){
-        if(textArea.getFont().isBold())
+    public void setBold() {
+        if (textArea.getFont().isBold())
             return;
-        
+
         int size = (int) fontSizeSpinner.getValue();
         textArea.setFont(new Font(textArea.getFont().toString(), Font.BOLD, size));
     }
@@ -248,10 +233,10 @@ public class MyFrame extends JFrame {
     /*
      * ITALIC ITEM
      */
-    public void setItalic(){
-        if(textArea.getFont().isItalic())
+    public void setItalic() {
+        if (textArea.getFont().isItalic())
             return;
-        
+
         int size = (int) fontSizeSpinner.getValue();
         textArea.setFont(new Font(textArea.getFont().toString(), Font.ITALIC, size));
     }
@@ -306,6 +291,5 @@ public class MyFrame extends JFrame {
             }
         });
     }
-
 
 }
